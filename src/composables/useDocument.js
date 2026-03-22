@@ -69,6 +69,11 @@ export function computeBubbleHunks(bubble, modifiedContent) {
         if (raw[i].added) added += raw[i].value
         i++
       }
+      // Skip hunks where content is identical (e.g. whitespace-only diff artifacts)
+      if (removed === added) {
+        hunks.push({ type: 'context', value: removed })
+        continue
+      }
       // accepted: null = undecided, true = accepted, false = rejected
       hunks.push({ type: 'change', removed, added, accepted: null })
     }

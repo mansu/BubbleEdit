@@ -21,11 +21,11 @@ const errorMsg = ref('')
 
 const question = computed(() => custom.value.trim() || selected.value)
 
-async function askQuestion(q) {
-  if (!q) return
+function ask() {
+  if (!question.value) return
   errorMsg.value = ''
 
-  const bubble = createBubble(q, props.parentBubble?.id ?? null)
+  const bubble = createBubble(question.value, props.parentBubble?.id ?? null)
 
   if (props.parentBubble) {
     addChildBubble(props.parentBubble, bubble)
@@ -36,7 +36,6 @@ async function askQuestion(q) {
   selected.value = ''
   custom.value = ''
 
-  // Fire and forget — bubble tracks its own loading state
   suggestEdit(doc.content, bubble.question, doc.persona, getExcludedQuestions())
     .then(result => {
       computeBubbleHunks(bubble, result.modifiedContent)
@@ -47,25 +46,21 @@ async function askQuestion(q) {
       bubble.explanation = e.message
     })
 }
-
-function ask() {
-  askQuestion(question.value)
-}
 </script>
 
 <template>
   <div class="space-y-2">
-    <!-- Expert questions list -->
-    <div v-if="doc.domainQuestions.length" class="space-y-1">
-      <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Expert: {{ doc.domain }}</p>
-      <button
-        v-for="q in doc.domainQuestions"
-        :key="q"
-        @click="askQuestion(q)"
-        class="w-full text-left text-sm px-3 py-1.5 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition"
+    <!-- Expert questions as a compact native listbox -->
+    <div v-if="doc.domainQuestions.length">
+      <p class="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Expert: {{ doc.domain }}</p>
+      <select
+        v-model="selected"
+        @change="custom = ''"
+        :size="Math.min(doc.domainQuestions.length, 4)"
+        class="w-full text-xs border border-gray-200 rounded-lg text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
       >
-        {{ q }}
-      </button>
+        <option v-for="q in doc.domainQuestions" :key="q" :value="q">{{ q }}</option>
+      </select>
     </div>
 
     <!-- Standard question dropdown + Ask -->
