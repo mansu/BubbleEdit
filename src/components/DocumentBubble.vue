@@ -51,7 +51,7 @@ const renderedHtml = computed(() => marked(doc.content))
     <!-- Right: Question bubbles (scrollable) -->
     <div class="w-1/2 overflow-y-auto min-h-0 space-y-3 pb-4">
       <div
-        v-for="bubble in doc.bubbles"
+        v-for="bubble in [...doc.bubbles].reverse()"
         :key="bubble.id"
       >
         <QuestionBubble :bubble="bubble" />
