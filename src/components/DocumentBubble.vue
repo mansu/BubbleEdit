@@ -1,12 +1,12 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { marked } from 'marked'
-import { doc } from '../composables/useDocument.js'
+import { doc, getDocumentDisplayContent } from '../composables/useDocument.js'
 import QuestionSelector from './QuestionSelector.vue'
 import QuestionBubble from './QuestionBubble.vue'
 
 const rawMode = ref(false)
-const renderedHtml = computed(() => marked(doc.content))
+const displayContent = computed(() => getDocumentDisplayContent())
 </script>
 
 <template>
@@ -37,7 +37,7 @@ const renderedHtml = computed(() => marked(doc.content))
             v-model="doc.content"
             class="w-full h-full min-h-64 font-mono text-sm text-gray-800 border border-gray-200 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none bg-gray-50"
           />
-          <div v-else class="markdown-body" v-html="renderedHtml" />
+          <div v-else class="markdown-body" v-html="marked(displayContent)" />
         </div>
 
         <!-- Question selector pinned to bottom -->
@@ -54,7 +54,7 @@ const renderedHtml = computed(() => marked(doc.content))
         v-for="bubble in [...doc.bubbles].reverse()"
         :key="bubble.id"
       >
-        <QuestionBubble :bubble="bubble" />
+        <QuestionBubble :bubble="bubble" :is-root="true" />
       </div>
 
       <div v-if="!doc.bubbles.length" class="flex items-center justify-center h-full text-gray-300 text-sm select-none">

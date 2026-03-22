@@ -1,15 +1,29 @@
 <script setup>
-import { ref } from 'vue'
-import { acceptBubble, rejectBubble, closeBubble } from '../composables/useDocument.js'
+import { ref, computed } from 'vue'
+import { acceptBubble, rejectBubble, closeBubble, activeBubbleId, setPreviewBubble } from '../composables/useDocument.js'
 import DiffView from './DiffView.vue'
 import QuestionSelector from './QuestionSelector.vue'
 import QuestionBubble from './QuestionBubble.vue'
 
 const props = defineProps({
   bubble: { type: Object, required: true },
+  isRoot: { type: Boolean, default: false },
 })
 
-const collapsed = ref(false)
+const localCollapsed = ref(false)
+const collapsed = computed(() => props.isRoot ? activeBubbleId.value !== props.bubble.id : localCollapsed.value)
+
+function toggle() {
+  if (props.isRoot) {
+    activeBubbleId.value = activeBubbleId.value === props.bubble.id ? null : props.bubble.id
+  } else {
+    localCollapsed.value = !localCollapsed.value
+  }
+}
+
+function previewCurrentBubble() {
+  setPreviewBubble(props.bubble)
+}
 
 const borderColor = {
   loading:  'border-l-yellow-300',
@@ -31,9 +45,9 @@ const borderColor = {
       <div
         class="flex items-start justify-between px-4 py-3 bg-gray-50 border-b border-gray-200 cursor-pointer select-none"
         :class="{ 'border-b-0': collapsed }"
-        @click.self="collapsed = !collapsed"
+        @click.self="toggle"
       >
-        <div class="flex-1 min-w-0" @click="collapsed = !collapsed">
+        <div class="flex-1 min-w-0" @click="toggle">
           <div class="flex items-center gap-2">
             <span class="text-gray-400 text-xs transition-transform" :class="collapsed ? 'rotate-0' : 'rotate-90'">▶</span>
             <span class="text-purple-400 font-bold text-xs shrink-0">Q</span>
@@ -70,7 +84,12 @@ const borderColor = {
 
         <!-- Diff view -->
         <div v-else-if="bubble.hunks.length" class="px-4 pt-4">
-          <DiffView :hunks="bubble.hunks" :readonly="bubble.status !== 'open'" />
+          <DiffView
+            :bubble="bubble"
+            :hunks="bubble.hunks"
+            :readonly="bubble.status !== 'open'"
+            @change="previewCurrentBubble"
+          />
         </div>
 
         <!-- Action buttons -->

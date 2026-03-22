@@ -2,15 +2,23 @@
 import { computed } from 'vue'
 
 const props = defineProps({
+  bubble: { type: Object, required: true },
   hunks: { type: Array, required: true },
   readonly: { type: Boolean, default: false },
 })
+
+const emit = defineEmits(['change'])
 
 const hasChanges = computed(() => props.hunks.some(h => h.type === 'change'))
 
 function lines(str) {
   // Split into lines, remove trailing empty line from split
   return str.split('\n').filter((l, i, arr) => i < arr.length - 1 || l !== '')
+}
+
+function setHunkDecision(hunk, accepted) {
+  hunk.accepted = accepted
+  emit('change', props.bubble)
 }
 </script>
 
@@ -58,13 +66,13 @@ function lines(str) {
         <div v-if="!readonly" class="flex items-center gap-2 px-3 py-1.5 bg-gray-50 border-t border-gray-100">
           <template v-if="hunk.accepted === null">
             <button
-              @click="hunk.accepted = true"
+              @click="setHunkDecision(hunk, true)"
               class="text-xs px-2 py-0.5 text-green-700 bg-green-100 hover:bg-green-200 rounded transition"
             >
               ✓ Accept
             </button>
             <button
-              @click="hunk.accepted = false"
+              @click="setHunkDecision(hunk, false)"
               class="text-xs px-2 py-0.5 text-red-600 bg-red-100 hover:bg-red-200 rounded transition"
             >
               ✗ Reject
@@ -75,7 +83,7 @@ function lines(str) {
               {{ hunk.accepted ? '✓ Accepted' : '✗ Rejected' }}
             </span>
             <button
-              @click="hunk.accepted = null"
+              @click="setHunkDecision(hunk, null)"
               class="text-xs text-gray-400 hover:text-gray-600 underline"
             >
               undo

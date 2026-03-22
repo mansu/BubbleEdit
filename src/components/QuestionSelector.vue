@@ -2,11 +2,13 @@
 import { ref, computed } from 'vue'
 import {
   doc,
+  activeBubbleId,
   STANDARD_QUESTIONS,
   createBubble,
   addRootBubble,
   addChildBubble,
   computeBubbleHunks,
+  getBubbleSourceContent,
   getExcludedQuestions,
 } from '../composables/useDocument.js'
 import { suggestEdit } from '../services/api.js'
@@ -25,18 +27,20 @@ function ask() {
   if (!question.value) return
   errorMsg.value = ''
 
-  const bubble = createBubble(question.value, props.parentBubble?.id ?? null)
+  const sourceContent = getBubbleSourceContent(props.parentBubble)
+  const bubble = createBubble(question.value, props.parentBubble?.id ?? null, sourceContent)
 
   if (props.parentBubble) {
     addChildBubble(props.parentBubble, bubble)
   } else {
     addRootBubble(bubble)
+    activeBubbleId.value = bubble.id
   }
 
   selected.value = ''
   custom.value = ''
 
-  suggestEdit(doc.content, bubble.question, doc.persona, getExcludedQuestions())
+  suggestEdit(sourceContent, bubble.question, doc.persona, getExcludedQuestions())
     .then(result => {
       computeBubbleHunks(bubble, result.modifiedContent)
       bubble.explanation = result.explanation

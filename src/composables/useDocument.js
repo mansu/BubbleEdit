@@ -1,5 +1,8 @@
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { diffLines } from 'diff'
+
+export const activeBubbleId = ref(null)
+export const previewBubbleId = ref(null)
 
 let nextId = 1
 export const uid = () => String(nextId++)
@@ -37,14 +40,14 @@ export const doc = reactive({
 })
 
 // Create a new bubble (snapshot of current content taken at creation time)
-export function createBubble(question, parentId = null) {
+export function createBubble(question, parentId = null, baseContent = doc.content) {
   return reactive({
     id: uid(),
     parentId,
     question,
     status: 'loading',   // loading | open | accepted | rejected | closed | error
     explanation: '',
-    baseContent: doc.content,   // snapshot when bubble was created
+    baseContent,                // snapshot when bubble was created
     hunks: [],                  // computed diff hunks
     children: [],
   })
@@ -94,6 +97,80 @@ export function getBubbleResult(bubble) {
     .join('')
 }
 
+// Use the bubble's proposed content unless a hunk has been explicitly rejected.
+// This is the content follow-up questions should build on.
+export function getBubblePreview(bubble) {
+  return bubble.hunks
+    .map(h => {
+      if (h.type === 'context') return h.value
+      return h.accepted === false ? h.removed : h.added
+    })
+    .join('')
+}
+
+export function getBubbleSourceContent(parentBubble = null) {
+  return parentBubble ? getBubblePreview(parentBubble) : doc.content
+}
+
+function findBubbleById(targetId, bubbles = doc.bubbles) {
+  for (const bubble of bubbles) {
+    if (bubble.id === targetId) return bubble
+    const nested = findBubbleById(targetId, bubble.children)
+    if (nested) return nested
+  }
+  return null
+}
+
+function findBubbleParent(targetId, bubbles = doc.bubbles, parent = null) {
+  for (const bubble of bubbles) {
+    if (bubble.id === targetId) return parent
+    const nested = findBubbleParent(targetId, bubble.children, bubble)
+    if (nested) return nested
+  }
+  return null
+}
+
+function getBubbleAncestors(bubble) {
+  const ancestors = []
+  let parent = findBubbleParent(bubble.id)
+
+  while (parent) {
+    ancestors.unshift(parent)
+    parent = findBubbleParent(parent.id)
+  }
+
+  return ancestors
+}
+
+function finalizeBubbleAcceptance(bubble) {
+  bubble.hunks.forEach(h => {
+    if (h.type === 'change' && h.accepted === null) h.accepted = true
+  })
+  bubble.status = 'accepted'
+}
+
+export function setPreviewBubble(bubble = null) {
+  previewBubbleId.value = bubble?.id ?? null
+}
+
+export function getDocumentDisplayContent() {
+  if (!previewBubbleId.value) return doc.content
+
+  let bubble = findBubbleById(previewBubbleId.value)
+  while (bubble) {
+    const parent = findBubbleParent(bubble.id)
+    const bubbleHidden = bubble.status === 'closed' || bubble.status === 'rejected'
+    const parentHidden = parent && (parent.status === 'closed' || parent.status === 'rejected')
+    if (!bubbleHidden && !parentHidden) break
+    bubble = parent
+  }
+
+  if (!bubble) return doc.content
+  if (!bubble.hunks.length) return bubble.baseContent
+
+  return getBubbleResult(bubble)
+}
+
 export function addRootBubble(bubble) {
   doc.bubbles.push(bubble)
 }
@@ -104,11 +181,11 @@ export function addChildBubble(parent, child) {
 
 // Accept: finalize all undecided hunks as accepted, update live content
 export function acceptBubble(bubble) {
-  bubble.hunks.forEach(h => {
-    if (h.type === 'change' && h.accepted === null) h.accepted = true
-  })
-  bubble.status = 'accepted'
-  doc.content = getBubbleResult(bubble)
+  getBubbleAncestors(bubble).forEach(finalizeBubbleAcceptance)
+  finalizeBubbleAcceptance(bubble)
+  const result = getBubbleResult(bubble)
+  setPreviewBubble(bubble)
+  doc.content = result
 }
 
 // Reject: no content change, mark closed for AI exclusion
