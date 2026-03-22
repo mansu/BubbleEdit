@@ -39,17 +39,16 @@ const displayContent = computed(() => getDocumentDisplayContent())
           />
           <div v-else class="markdown-body" v-html="marked(displayContent)" />
         </div>
-
-        <!-- Question selector pinned to bottom -->
-        <div class="shrink-0 px-5 pb-5 pt-4 border-t border-gray-100">
-          <p class="text-xs text-gray-400 uppercase tracking-wide font-medium mb-2">Ask a question</p>
-          <QuestionSelector :parent-bubble="null" />
-        </div>
       </div>
     </div>
 
     <!-- Right: Question bubbles (scrollable) -->
     <div class="w-1/2 overflow-y-auto min-h-0 space-y-3 pb-4">
+      <div class="bg-gray-50 rounded-xl border border-gray-200 px-4 py-3 shadow-sm">
+        <p class="text-xs text-gray-400 uppercase tracking-wide font-medium mb-2">Ask a question</p>
+        <QuestionSelector :parent-bubble="null" />
+      </div>
+
       <div
         v-for="bubble in [...doc.bubbles].reverse()"
         :key="bubble.id"

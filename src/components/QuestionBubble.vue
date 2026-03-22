@@ -107,27 +107,27 @@ const borderColor = {
             ✗ Reject
           </button>
         </div>
-
-        <!-- Follow-up questions -->
-        <div
-          v-if="bubble.status === 'open' || bubble.status === 'accepted'"
-          class="px-4 pb-4 border-t border-gray-100 pt-3"
-        >
-          <p class="text-xs text-gray-400 uppercase tracking-wide font-medium mb-2">Follow-up question</p>
-          <QuestionSelector :parent-bubble="bubble" />
-        </div>
       </template>
     </div>
 
-    <!-- Child bubbles -->
-    <div v-if="bubble.children.length" class="mt-3 space-y-3">
+    <!-- Follow-up branch -->
+    <div
+      v-if="bubble.status === 'open' || bubble.status === 'accepted' || bubble.children.length"
+      class="mt-3 pl-5 border-l-2 border-gray-200 space-y-3"
+    >
       <div
+        v-if="bubble.status === 'open' || bubble.status === 'accepted'"
+        class="bg-gray-50 rounded-xl border border-gray-200 px-4 py-3 shadow-sm"
+      >
+        <p class="text-xs text-gray-400 uppercase tracking-wide font-medium mb-2">Follow-up question</p>
+        <QuestionSelector :parent-bubble="bubble" />
+      </div>
+
+      <QuestionBubble
         v-for="child in bubble.children"
         :key="child.id"
-        class="pl-5 border-l-2 border-gray-200"
-      >
-        <QuestionBubble :bubble="child" />
-      </div>
+        :bubble="child"
+      />
     </div>
   </div>
 </template>
