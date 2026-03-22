@@ -120,4 +120,4 @@ ${content}`,
 // ── Start ─────────────────────────────────────────────────────────────────────
 
 const PORT = process.env.PORT || 3001
-app.listen(PORT, () => console.log(`BubbleEdit server on http://localhost:${PORT} [model: ${MODEL}]`))
+app.listen(PORT, () => console.log(`BubbleEdit server on http://localhost:${PORT} [model: ${DEFAULT_MODEL}]`))

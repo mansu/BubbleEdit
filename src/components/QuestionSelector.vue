@@ -21,20 +21,11 @@ const errorMsg = ref('')
 
 const question = computed(() => custom.value.trim() || selected.value)
 
-const allQuestions = computed(() => {
-  return [
-    { group: 'Standard', items: STANDARD_QUESTIONS },
-    ...(doc.domainQuestions.length
-      ? [{ group: `Expert: ${doc.domain}`, items: doc.domainQuestions }]
-      : []),
-  ]
-})
-
-async function ask() {
-  if (!question.value) return
+async function askQuestion(q) {
+  if (!q) return
   errorMsg.value = ''
 
-  const bubble = createBubble(question.value, props.parentBubble?.id ?? null)
+  const bubble = createBubble(q, props.parentBubble?.id ?? null)
 
   if (props.parentBubble) {
     addChildBubble(props.parentBubble, bubble)
@@ -56,20 +47,36 @@ async function ask() {
       bubble.explanation = e.message
     })
 }
+
+function ask() {
+  askQuestion(question.value)
+}
 </script>
 
 <template>
   <div class="space-y-2">
+    <!-- Expert questions list -->
+    <div v-if="doc.domainQuestions.length" class="space-y-1">
+      <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Expert: {{ doc.domain }}</p>
+      <button
+        v-for="q in doc.domainQuestions"
+        :key="q"
+        @click="askQuestion(q)"
+        class="w-full text-left text-sm px-3 py-1.5 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition"
+      >
+        {{ q }}
+      </button>
+    </div>
+
+    <!-- Standard question dropdown + Ask -->
     <div class="flex gap-2">
       <select
         v-model="selected"
         @change="custom = ''"
-        class="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+        class="flex-1 min-w-0 text-sm border border-gray-200 rounded-lg px-3 py-2 text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
       >
         <option value="">Choose a question…</option>
-        <optgroup v-for="group in allQuestions" :key="group.group" :label="group.group">
-          <option v-for="q in group.items" :key="q" :value="q">{{ q }}</option>
-        </optgroup>
+        <option v-for="q in STANDARD_QUESTIONS" :key="q" :value="q">{{ q }}</option>
       </select>
       <button
         @click="ask"
