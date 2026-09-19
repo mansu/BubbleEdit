@@ -21,9 +21,9 @@ The goal is to help you explore alternatives without losing your questions or ha
 
 Watch how parallel questions, side-by-side review, and selective acceptance help you explore different edits without losing your train of thought.
 
-[![Watch the BubbleEdit demo](demo-video/demo-parallel-poster.png)](demo-video/BubbleEdit-demo-parallel.mp4)
+[![BubbleEdit: parallel questions, side-by-side diffs, and selective acceptance](demo-video/BubbleEdit-preview.gif)](demo-video/BubbleEdit-demo-parallel.mp4)
 
-[Watch the video](demo-video/BubbleEdit-demo-parallel.mp4) · [Subtitles](demo-video/BubbleEdit-demo-parallel.srt)
+[Watch the full demo with voice-over](demo-video/BubbleEdit-demo-parallel.mp4) · [Subtitles](demo-video/BubbleEdit-demo-parallel.srt)
 
 ## Features
 
