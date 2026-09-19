@@ -1,12 +1,36 @@
 # BubbleEdit
 
-An AI-powered markdown editor that suggests edits through a tree of interactive "bubbles". Ask questions about your document, review diffs, and accept or reject changes hunk by hunk.
+An AI-powered Markdown editor for exploring several editing questions at once. Each answer gets its own bubble beside your document, so you can compare proposed changes before applying them and keep only the edits you want.
+
+## Why we built BubbleEdit
+
+Editing rarely raises just one question. Is the grammar right? Could the introduction be shorter? Does the wording raise possible legal issues? Each question can lead to a different rewrite, and the most extensive rewrite is not always the right one.
+
+In a one-question-at-a-time chat workflow, waiting for an answer can interrupt your train of thought—you may forget the next question before the first response arrives. Comparing a rewrite with the original also takes work when they are separated by messages or screens. And even a useful answer may change more than you intended.
+
+BubbleEdit keeps those questions and decisions visible:
+
+- **Ask while the thought is fresh.** Submit multiple questions without waiting for earlier answers. Each request runs independently and produces its own question bubble.
+- **Compare beside the document.** The document stays on the left; question bubbles and their diffs appear on the right. Switch between bubbles to inspect how different requests would change the document before committing to an edit.
+- **Keep only what helps.** Accept or reject individual changes within a response, or accept or reject the whole proposal. “Accept All” applies undecided changes while preserving any explicit rejections.
+- **Start with a prompt or write your own.** Built-in tasks include “Fix grammar and spelling,” “Make it more concise,” and “Improve clarity and flow.” BubbleEdit also suggests questions for the detected document type. You can ask your own question, such as “Flag wording that may raise legal issues,” to identify points for further review.
+
+The goal is to help you explore alternatives without losing your questions or handing over control of the document. You decide which changes fit your intent.
+
+## Demo
+
+Watch how parallel questions, side-by-side review, and selective acceptance help you explore different edits without losing your train of thought.
+
+[![Watch the BubbleEdit demo](demo-video/demo-parallel-poster.png)](demo-video/BubbleEdit-demo-parallel.mp4)
+
+[Watch the video](demo-video/BubbleEdit-demo-parallel.mp4) · [Subtitles](demo-video/BubbleEdit-demo-parallel.srt)
 
 ## Features
 
 - **Open & save** markdown files directly from disk (no upload)
 - **Bubble tree** — each question spawns a bubble with a diff; bubbles can have child bubbles forming a tree
-- **Per-hunk accept/reject** — accept or reject individual diff hunks, then apply the whole bubble
+- **Side-by-side review** — inspect each answer's diff beside your document before applying it
+- **Per-hunk accept/reject** — accept or reject individual diff hunks, then apply the reviewed result
 - **Parallel questions** — ask multiple questions at once; each bubble loads independently
 - **Expert mode** — on file open, the document domain is auto-detected (e.g. "legal contract") and an expert persona is assigned (e.g. "experienced contract attorney"). Domain-specific questions are generated and added to the dropdown alongside standard ones
 - **Closed bubble memory** — rejected/closed bubbles are excluded from future AI suggestions
@@ -51,7 +75,7 @@ Then open **http://localhost:5173** in Chrome or Edge.
 1. Click **Open File** and select a markdown file
 2. The document domain is auto-detected and expert questions are generated
 3. Select a question from the dropdown (standard or expert) or type a custom one, then click **Ask**
-4. A bubble appears on the right with a diff showing suggested changes
+4. Ask more questions while earlier requests are still running; each answer appears in its own bubble on the right, beside the document
 5. Accept or reject individual hunks, then click **✓ Accept All** to apply to the document
 6. Ask follow-up questions inside any open or accepted bubble to create child bubbles
 7. Click a bubble header to collapse it; click **×** to close and exclude it from future suggestions

@@ -1,0 +1,23 @@
+1
+00:00:00,000 --> 00:00:07,625
+Different questions lead to different rewrites. In a chat thread, comparing them is hard, and your next question can slip away.
+
+2
+00:00:07,625 --> 00:00:11,917
+BubbleEdit lets you ask several questions at once, while they are fresh.
+
+3
+00:00:11,917 --> 00:00:18,392
+Choose a preset, like grammar checking, or ask your own about clarity, tone, or possible legal issues.
+
+4
+00:00:18,392 --> 00:00:25,146
+Each answer gets its own bubble beside your document. Compare changes side by side before applying them.
+
+5
+00:00:25,146 --> 00:00:30,146
+Rewrite too much? Keep the edits you like, reject the rest, or accept in bulk.
+
+6
+00:00:30,146 --> 00:00:34,364
+BubbleEdit. Ask freely. Compare clearly. Stay in control.
