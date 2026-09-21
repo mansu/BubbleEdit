@@ -38,7 +38,7 @@ Watch how parallel questions, side-by-side review, and selective acceptance help
 
 ## Requirements
 
-- **Node.js** 18+
+- **Node.js** 20.19+, 22.13+, or 24+ (required by the build and test tools)
 - **Chrome or Edge** (File System Access API — Firefox/Safari not supported)
 - **Anthropic API key**
 
