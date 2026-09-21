@@ -1,0 +1,3 @@
+* add a button to options like refine further etc..
+* Show the same outputs from multiple models in various diffs so we can compare. Also, accept and reject certain edits.
+* Add ability to close a section. For example, reject all should minimize the tab and move it to bottom of the list.
